@@ -1,0 +1,12 @@
+bin/
+lib/
+
+share/
+etc/
+.ipynb_checkpoints
+
+__pycache__/
+
+*.env
+
+*.json
