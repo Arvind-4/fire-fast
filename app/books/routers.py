@@ -6,6 +6,8 @@ from app.utils import (
     save,
     get_all,
     get_one,
+    update_data,
+    delete_data,
 )
 from .schemas import (
     BookSchema,
@@ -31,10 +33,15 @@ async def get_book(slug: str):
         return errors
     return data
 
+@router.post('/books/{slug}/update/', response_model=BookSchema, status_code=200)
+async def get_book(slug: str, book_data: BookSchema):
+    print('From router.post()', slug, dict(book_data))
+    data = save(data=dict(book_data))
+    return data
+
 @router.post('/books/{slug}/delete/')
 async def delete_book(slug: str):
-    db = firestore.client()
-    collection = db.collection("books")
-    document = collection.document(slug)
-    result = document.delete()
+    result, errors = delete_data(slug)
+    if len(errors) > 0:
+        return errors
     return result

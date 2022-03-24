@@ -1,7 +1,21 @@
+import os
 import uuid
-from firebase_admin import firestore
+import pathlib
+from firebase_admin import (
+    firestore,
+    storage,
+)
 
 from app.shortcuts import get_slug
+
+IMAGE_PATH = pathlib.Path(__file__).resolve().parent.parent
+IMAGE_FOLDER_PATH = IMAGE_PATH / 'images'
+
+IMAGE_FILE_NAME = IMAGE_FOLDER_PATH / '1.jpg'
+IMAGE_UPLOAD_FILE_NAME = str(IMAGE_FILE_NAME.name)
+
+IMAGE_CLOULD_STORAGE_FOLDER = 'Images'
+IMAGE_BLOB_NAME = f"{IMAGE_CLOULD_STORAGE_FOLDER}/{IMAGE_UPLOAD_FILE_NAME}"
 
 def get_all():
     db = firestore.client()
@@ -41,3 +55,31 @@ def get_one(slug: str):
     except Exception as e:
         errors['error'] = str(e)
     return document.to_dict(), errors
+
+def update_data(slug: str, data: dict):
+    db = firestore.client()
+    collection = db.collection("books")
+    document = errors = {}
+    try:
+        document = collection.document(slug).update(data)
+    except Exception as e:
+        errors['error'] = str(e)
+    return document, errors
+
+def delete_data(slug: str):
+    errors = {}
+    result = None
+    db = firestore.client()
+    collection = db.collection("books")
+    document = collection.document(slug)
+    try:
+        result = document.delete()
+    except Exception as e:
+        errors['error'] = str(e)
+    return result, errors
+
+def file_upload():
+    bucket = storage.bucket()
+    imageBlob = bucket.blob(str(IMAGE_BLOB_NAME))
+    imageUploadpath = str(IMAGE_FILE_NAME)
+    imageBlob.upload_from_filename(str(imageUploadpath))
