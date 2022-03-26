@@ -2,3 +2,5 @@ python-dotenv==0.19.2
 fastapi==0.75.0
 uvicorn==0.17.6
 firebase-admin==5.2.0
+python-slugify==6.1.1
+cryptography==36.0.2
